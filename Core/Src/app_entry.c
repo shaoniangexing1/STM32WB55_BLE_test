@@ -582,22 +582,22 @@ void HAL_Delay(uint32_t Delay)
     wait += HAL_GetTickFreq();
   }
 
-  while ((HAL_GetTick() - tickstart) < wait)
-  {
-    /************************************************************************************
-     * ENTER SLEEP MODE
-     ***********************************************************************************/
-    LL_LPM_EnableSleep(); /**< Clear SLEEPDEEP bit of Cortex System Control Register */
+  // while ((HAL_GetTick() - tickstart) < wait)
+  // {
+  //   /************************************************************************************
+  //    * ENTER SLEEP MODE
+  //    ***********************************************************************************/
+  //   LL_LPM_EnableSleep(); /**< Clear SLEEPDEEP bit of Cortex System Control Register */
 
-    /**
-     * This option is used to ensure that store operations are completed
-     */
-  #if defined (__CC_ARM) || defined (__ARMCC_VERSION)
-    __force_stores();
-  #endif /* __ARMCC_VERSION */
+  //   /**
+  //    * This option is used to ensure that store operations are completed
+  //    */
+  // #if defined (__CC_ARM) || defined (__ARMCC_VERSION)
+  //   __force_stores();
+  // #endif /* __ARMCC_VERSION */
 
-    __WFI();
-  }
+  //   __WFI();
+  // }
 }
 
 void MX_APPE_Process(void)

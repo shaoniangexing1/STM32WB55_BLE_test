@@ -60,8 +60,10 @@
  */
 #define CFG_BLE_ADDRESS_TYPE              GAP_PUBLIC_ADDR
 
-#define CFG_FAST_CONN_ADV_INTERVAL_MIN    (0x80)      /**< 80ms */
-#define CFG_FAST_CONN_ADV_INTERVAL_MAX    (0xa0)      /**< 100ms */
+// #define CFG_FAST_CONN_ADV_INTERVAL_MIN    (0x80)      /**< 80ms */
+// #define CFG_FAST_CONN_ADV_INTERVAL_MAX    (0xa0)      /**< 100ms */
+#define CFG_FAST_CONN_ADV_INTERVAL_MIN    (0x320)     /**< 0.5s - ykk 20250926: 延长广播间隔降低功耗 */
+#define CFG_FAST_CONN_ADV_INTERVAL_MAX    (0x7D0)     /**< 1.25s - ykk 20250926: 延长广播间隔降低功耗 */
 #define CFG_LP_CONN_ADV_INTERVAL_MIN      (0x640)     /**< 1s */
 #define CFG_LP_CONN_ADV_INTERVAL_MAX      (0xfa0)     /**< 2.5s */
 /**
@@ -147,7 +149,10 @@
  * SMPS not used when Set to 0
  * SMPS used when Set to 1
  */
-#define CFG_USE_SMPS    0
+// SMPS在HSI+LSE模式下功耗更高 - ykk 20250926
+// 原因：HSI作为SMPS时钟源时需要额外的分频电路，增加功耗
+// #define CFG_USE_SMPS    1  // ykk 20250926: 启用SMPS是降低BLE功耗的关键，可降至50-200µA
+#define CFG_USE_SMPS    0  // ykk 20250926: 在HSI+LSE模式下禁用SMPS以降低功耗
 
 /* USER CODE BEGIN Generic_Parameters */
 /* USER CODE END Generic_Parameters */
@@ -170,7 +175,8 @@
 #define CFG_DEV_ID_P2P_SERVER6                  (0x8A)
 #define CFG_DEV_ID_P2P_ROUTER                   (0x85)
 
-#define  RADIO_ACTIVITY_EVENT   1          /* 1 for OOB Demo */
+/* ykk 20250927: 关闭无线电活动事件的LED闪烁，避免与连接参数状态指示混淆 */
+#define  RADIO_ACTIVITY_EVENT   1         /* 0: 禁用LED闪烁；1: OOB Demo */
 
 /**
 * AD Element - Group B Feature
@@ -186,12 +192,11 @@
 
   /*  L2CAP Connection Update request parameters used for test only with smart Phone */
 #define L2CAP_REQUEST_NEW_CONN_PARAM             1
-
 /* ykk 20250923: 连接参数范围目标 45–75 ms (1.25 ms 单位 = 36–60).*/
-#define L2CAP_INTERVAL_MIN              CONN_P(45) /* 45ms */
-#define L2CAP_INTERVAL_MAX              CONN_P(75) /* 75ms */
-#define L2CAP_PERIPHERAL_LATENCY             0x0000
-#define L2CAP_TIMEOUT_MULTIPLIER        0x1F4
+#define L2CAP_INTERVAL_MIN              CONN_P(45)  /* 45ms */
+#define L2CAP_INTERVAL_MAX              CONN_P(75)  /* 75ms */
+#define L2CAP_PERIPHERAL_LATENCY        0x0004      /* 从机延迟 4（后续可按功耗需求再调大） */
+#define L2CAP_TIMEOUT_MULTIPLIER        0x01F4      /* 5s (单位10ms) */
 
 /* USER CODE BEGIN Specific_Parameters */
 
@@ -205,13 +210,14 @@
  * Valid values are from 1 to 8
  */
 #define CFG_BLE_NUM_LINK            2
+// #define CFG_BLE_NUM_LINK            1  // ykk 20250926: 减少到1个连接以降低功耗
 
 /**
  * Maximum number of Services that can be stored in the GATT database.
  * Note that the GAP and GATT services are automatically added so this parameter should be 2 plus the number of user services
  */
 #define CFG_BLE_NUM_GATT_SERVICES   8
-
+// #define CFG_BLE_NUM_GATT_SERVICES   3  // ykk 20250926: 减少到3个服务以降低GATT表内存占用和功耗for STM32WPAN Middleware.
 /**
  * Maximum number of Attributes
  * (i.e. the number of characteristic + the number of characteristic values + the number of descriptors, excluding the services)
@@ -220,6 +226,7 @@
  * so this parameters should be 9 plus the number of user Attributes
  */
 #define CFG_BLE_NUM_GATT_ATTRIBUTES 68
+// #define CFG_BLE_NUM_GATT_ATTRIBUTES 20  // ykk 20250926: 减少属性数量降低内存和功耗
 
 /**
  * Maximum supported ATT_MTU size
@@ -239,6 +246,7 @@
  * This parameter is ignored by the CPU2 when CFG_BLE_OPTIONS has SHCI_C2_BLE_INIT_OPTIONS_LL_ONLY flag set
  */
 #define CFG_BLE_ATT_VALUE_ARRAY_SIZE    (1344)
+// #define CFG_BLE_ATT_VALUE_ARRAY_SIZE    (300)  // ykk 20250926: 大幅减少内存占用以降低功耗
 
 /**
  * Prepare Write List size in terms of number of packet
@@ -604,12 +612,14 @@ typedef enum
 /**
  * When set to 1, the traces are enabled in the BLE services
  */
-#define CFG_DEBUG_BLE_TRACE     1
+// 原配置 - ykk 20250926: 原始启用BLE调试跟踪增加连接功耗
+// #define CFG_DEBUG_BLE_TRACE     1
+#define CFG_DEBUG_BLE_TRACE     0  // ykk 20250926: 禁用BLE调试跟踪降低连接功耗
 
 /**
  * Enable or Disable traces in application
  */
-#define CFG_DEBUG_APP_TRACE     0
+#define CFG_DEBUG_APP_TRACE     1
 
 #if (CFG_DEBUG_APP_TRACE != 0)
 #define APP_DBG_MSG                 PRINT_MESG_DBG
@@ -624,7 +634,7 @@ typedef enum
 #if (CFG_DEBUG_TRACE != 0)
 #undef CFG_LPM_SUPPORTED
 #undef CFG_DEBUGGER_SUPPORTED
-#define CFG_LPM_SUPPORTED           0//开启进入低功耗模式
+#define CFG_LPM_SUPPORTED           0
 #define CFG_DEBUGGER_SUPPORTED      1
 #endif
 

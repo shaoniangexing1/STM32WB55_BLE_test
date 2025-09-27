@@ -14,3 +14,10 @@
 			else(OffModeDisable == 0)
 				进入待机模式
 4. 在蓝牙模块进入低功耗的时候是在空闲模式下进入的
+5. 关闭debug调试的宏定义
+	// 在app_conf.h中修改：
+#define CFG_DEBUGGER_SUPPORTED    0  // 生产环境下关闭调试器
+#define CFG_DEBUG_BLE_TRACE       0  // 关闭BLE跟踪
+#define CFG_DEBUG_APP_TRACE 
+6.关闭hal_delay 进入睡眠模式 
+7. 修改app_ble的代码，使得可以修改连接间隔，更改了连接间隔和广播间隔是得功耗降低

@@ -37,12 +37,7 @@ ble_p2pserver/exe/hci_tl.o: ..\STM32_WPAN\ble_thread\tl\hci_tl.c \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_hal_uart.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_hal_uart_ex.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_system.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_exti.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_system.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_rcc.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_ipcc.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_bus.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_pwr.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_cortex.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_utils.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_hsem.h \
@@ -58,5 +53,5 @@ ble_p2pserver/exe/hci_tl.o: ..\STM32_WPAN\ble_thread\tl\hci_tl.c \
   ..\STM32_WPAN\ble\core\ble_std.h ..\STM32_WPAN\ble\core\ble_defs.h \
   ..\STM32_WPAN\ble\core\template\osal.h \
   ..\STM32_WPAN\ble\core\template\compiler.h \
-  ..\STM32_WPAN\utilities\stm_list.h ..\STM32_WPAN\ble_thread\tl\tl.h \
+  ..\STM32_WPAN\utilities\stm_list.h \
   ..\STM32_WPAN\ble_thread\tl\hci_tl.h

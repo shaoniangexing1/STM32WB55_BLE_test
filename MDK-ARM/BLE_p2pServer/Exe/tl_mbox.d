@@ -39,12 +39,7 @@ ble_p2pserver/exe/tl_mbox.o: ..\STM32_WPAN\ble_thread\tl\tl_mbox.c \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_hal_uart.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_hal_uart_ex.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_system.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_exti.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_system.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_rcc.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_ipcc.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_bus.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_pwr.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_cortex.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_utils.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_hsem.h \
@@ -54,4 +49,4 @@ ble_p2pserver/exe/tl_mbox.o: ..\STM32_WPAN\ble_thread\tl\tl_mbox.c \
   ..\P-NUCLEO-WB55.Nucleo\stm32wbxx_nucleo_errno.h \
   ..\Core\Inc\stm32wbxx_nucleo_conf.h \
   ..\STM32_WPAN\ble\core\ble_bufsize.h \
-  ..\STM32_WPAN\utilities\dbg_trace.h ..\Core\Inc\hw_if.h
+  ..\STM32_WPAN\utilities\dbg_trace.h

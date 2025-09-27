@@ -304,6 +304,7 @@ int main(void)
   /* Init code for STM32_WPAN */
 
   MX_APPE_Init();
+ // HAL_Delay(100);
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -628,13 +629,14 @@ static void MX_RTC_Init(void)
  */
 static void MX_DMA_Init(void)
 {
+  /* ykk 20250926: 禁用DMA时钟以降低功耗，因为UART已禁用不需要DMA */
+  /* DMA controller clock enable - 只在需要时开启 */
+  /* 由于UART已禁用，DMA时钟也应该被禁用以节省功耗 */
+  // __HAL_RCC_DMAMUX1_CLK_ENABLE();
+  // __HAL_RCC_DMA1_CLK_ENABLE();
+  // __HAL_RCC_DMA2_CLK_ENABLE();
 
-  /* DMA controller clock enable */
-  __HAL_RCC_DMAMUX1_CLK_ENABLE();
-  __HAL_RCC_DMA1_CLK_ENABLE();
-  __HAL_RCC_DMA2_CLK_ENABLE();
-
-  /* DMA interrupt init */
+  /* DMA interrupt init - DISABLED since UART is disabled */
   // /* DMA1_Channel4_IRQn interrupt configuration - DISABLED (UART related) */
   //  HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 15, 0);
   //  HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
@@ -650,6 +652,7 @@ static void MX_DMA_Init(void)
  */
 static void MX_GPIO_Init(void)
 {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
   /* USER CODE BEGIN MX_GPIO_Init_1 */
   /* USER CODE END MX_GPIO_Init_1 */
 
@@ -657,6 +660,23 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  /* ykk 20250926: 配置所有未使用的GPIO为模拟输入模式以最小化功耗 */
+  /* Configure all GPIO pins as analog inputs to minimize power consumption */
+  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  
+  /* Configure GPIOA pins */
+  GPIO_InitStruct.Pin = GPIO_PIN_All & ~(GPIO_PIN_13 | GPIO_PIN_14); // 保留调试引脚
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  
+  /* Configure GPIOB pins */  
+  GPIO_InitStruct.Pin = GPIO_PIN_All;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  
+  /* Configure GPIOC pins */
+  GPIO_InitStruct.Pin = GPIO_PIN_All;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
   /* USER CODE END MX_GPIO_Init_2 */

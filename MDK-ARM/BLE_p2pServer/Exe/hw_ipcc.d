@@ -36,12 +36,7 @@ ble_p2pserver/exe/hw_ipcc.o: ..\STM32_WPAN\Target\hw_ipcc.c \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_hal_uart.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_hal_uart_ex.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_system.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_exti.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_system.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_rcc.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_ipcc.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_bus.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_pwr.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_cortex.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_utils.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_hsem.h \

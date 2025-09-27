@@ -36,12 +36,7 @@ ble_p2pserver/exe/stm32wbxx_hal_msp.o: ..\Core\Src\stm32wbxx_hal_msp.c \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_system.h \
   ..\Core\Inc\app_conf.h ..\STM32_WPAN\ble_thread\hw.h \
   ..\Core\Inc\hw_conf.h ..\Core\Inc\hw_if.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_exti.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_system.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_rcc.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_ipcc.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_bus.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_pwr.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_cortex.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_utils.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_hsem.h \

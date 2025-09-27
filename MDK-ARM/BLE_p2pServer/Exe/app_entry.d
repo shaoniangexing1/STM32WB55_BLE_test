@@ -36,12 +36,7 @@ ble_p2pserver/exe/app_entry.o: ..\Core\Src\app_entry.c \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_hal_uart.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_hal_uart_ex.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_system.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_exti.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_system.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_rcc.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_ipcc.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_bus.h \
-  ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_pwr.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_cortex.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_utils.h \
   ..\STM32WBxx_HAL_Driver\Inc\stm32wbxx_ll_hsem.h \
@@ -51,19 +46,16 @@ ble_p2pserver/exe/app_entry.o: ..\Core\Src\app_entry.c \
   ..\P-NUCLEO-WB55.Nucleo\stm32wbxx_nucleo_errno.h \
   ..\Core\Inc\stm32wbxx_nucleo_conf.h \
   ..\STM32_WPAN\ble\core\ble_bufsize.h ..\Core\Inc\main.h \
-  ..\Core\Inc\app_entry.h ..\Core\Inc\app_common.h \
   ..\Core\Inc\app_entry.h ..\STM32_WPAN\App\app_ble.h \
   ..\STM32_WPAN\ble_thread\tl\hci_tl.h ..\STM32_WPAN\stm32_wpan_common.h \
   ..\CMSIS\Include\cmsis_compiler.h ..\STM32_WPAN\ble_thread\tl\tl.h \
   ..\STM32_WPAN\ble\ble.h ..\STM32_WPAN\App\ble_conf.h \
-  ..\Core\Inc\app_conf.h ..\STM32_WPAN\App\ble_dbg_conf.h \
-  ..\STM32_WPAN\ble\core\ble_core.h ..\STM32_WPAN\ble\core\ble_std.h \
-  ..\STM32_WPAN\ble\core\ble_defs.h \
+  ..\STM32_WPAN\App\ble_dbg_conf.h ..\STM32_WPAN\ble\core\ble_core.h \
+  ..\STM32_WPAN\ble\core\ble_std.h ..\STM32_WPAN\ble\core\ble_defs.h \
   ..\STM32_WPAN\ble\core\auto\ble_vs_codes.h \
   ..\STM32_WPAN\ble\core\auto\ble_gap_aci.h \
   ..\STM32_WPAN\ble\core\auto\ble_types.h \
   ..\STM32_WPAN\ble\core\template\ble_const.h \
-  ..\STM32_WPAN\ble\core\ble_std.h ..\STM32_WPAN\ble\core\ble_defs.h \
   ..\STM32_WPAN\ble\core\template\osal.h \
   ..\STM32_WPAN\ble\core\template\compiler.h \
   ..\STM32_WPAN\ble\core\auto\ble_gatt_aci.h \
@@ -71,7 +63,6 @@ ble_p2pserver/exe/app_entry.o: ..\Core\Src\app_entry.c \
   ..\STM32_WPAN\ble\core\auto\ble_hci_le.h \
   ..\STM32_WPAN\ble\core\auto\ble_l2cap_aci.h \
   ..\STM32_WPAN\ble\core\auto\ble_events.h \
-  ..\STM32_WPAN\ble\core\ble_bufsize.h \
   ..\STM32_WPAN\ble\core\ble_legacy.h ..\STM32_WPAN\ble\svc\Inc\bas.h \
   ..\STM32_WPAN\ble\svc\Inc\bls.h ..\STM32_WPAN\ble\svc\Inc\crs_stm.h \
   ..\STM32_WPAN\ble\svc\Inc\dis.h ..\STM32_WPAN\ble\svc\Inc\eds_stm.h \
@@ -84,7 +75,7 @@ ble_p2pserver/exe/app_entry.o: ..\Core\Src\app_entry.c \
   ..\STM32_WPAN\ble\svc\Inc\otas_stm.h ..\STM32_WPAN\ble\svc\Inc\mesh.h \
   ..\STM32_WPAN\ble\svc\Inc\template_stm.h \
   ..\STM32_WPAN\ble\svc\Inc\svc_ctl.h ..\STM32_WPAN\ble\svc\Inc\uuid.h \
-  ..\STM32_WPAN\ble_thread\tl\tl.h ..\Utilities\sequencer\stm32_seq.h \
+  ..\Utilities\sequencer\stm32_seq.h \
   ..\STM32_WPAN\ble_thread\tl\shci_tl.h \
   ..\Utilities\lpm\tiny_lpm\stm32_lpm.h ..\Core\Inc\app_debug.h \
   ..\STM32_WPAN\utilities\dbg_trace.h \

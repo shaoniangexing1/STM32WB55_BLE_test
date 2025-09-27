@@ -101,12 +101,12 @@
 /**
  * @brief value used to represent the LPM state of stop mode
  */
-static UTIL_LPM_bm_t StopModeDisable = UTIL_LPM_NO_BIT_SET;
+static UTIL_LPM_bm_t StopModeDisable = 1;
 
 /**
  * @brief value used to represent the LPM state of off mode
  */
-static UTIL_LPM_bm_t OffModeDisable = 1;
+static UTIL_LPM_bm_t OffModeDisable = 0;
 
 /**
  * @}

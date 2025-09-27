@@ -162,6 +162,8 @@ typedef struct
   uint8_t Advertising_mgr_timer_Id;
 
   uint8_t SwitchOffGPIO_timer_Id;
+  /* 延时发起 L2CAP 参数更新的定时器 */
+  uint8_t L2CAP_Update_timer_Id;
   /* USER CODE BEGIN PTD_1*/
 
   /* USER CODE END PTD_1 */
@@ -180,6 +182,12 @@ typedef struct
 
 /* USER CODE BEGIN PD */
 #define LED_ON_TIMEOUT                 (0.005*1000*1000/CFG_TS_TICK_VAL) /**< 5ms */
+/* 用于状态指示的LED亮灯时长（例如请求发送/失败/成功） */
+#define LED_STATUS_TIMEOUT             (0.2*1000*1000/CFG_TS_TICK_VAL)   /**< 200ms */
+/* 连接建立后延时再发起参数更新，避免过早被拒绝 */
+#define L2CAP_UPDATE_DELAY             (0.5*1000*1000/CFG_TS_TICK_VAL)   /**< 500ms */
+/* L2CAP 参数更新失败的最大重试次数 */
+#define L2CAP_UPDATE_MAX_RETRY         (3)
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -222,6 +230,8 @@ PLACE_IN_SECTION("TAG_OTA_START") const uint32_t MagicKeywordAddress =(uint32_t)
 
 static BleApplicationContext_t BleApplicationContext;
 static uint16_t AdvIntervalMin, AdvIntervalMax;
+/* L2CAP 参数更新重试计数 */
+static uint8_t l2cap_retry_count = 0;
 
 P2PS_APP_ConnHandle_Not_evt_t HandleNotification;
 
@@ -368,6 +378,7 @@ static void Switch_OFF_GPIO(void);
 #if (L2CAP_REQUEST_NEW_CONN_PARAM != 0)
 static void BLE_SVC_L2CAP_Conn_Update(uint16_t ConnectionHandle);
 static void Connection_Interval_Update_Req(void);
+static void L2CAP_Update_TimeoutCb(void);
 #endif /* L2CAP_REQUEST_NEW_CONN_PARAM != 0 */
 
 /* USER CODE BEGIN PFP */
@@ -521,6 +532,12 @@ void APP_BLE_Init(void)
    * Create timer to handle the Led Switch OFF
    */
   HW_TS_Create(CFG_TIM_PROC_ID_ISR, &(BleApplicationContext.SwitchOffGPIO_timer_Id), hw_ts_SingleShot, Switch_OFF_GPIO);
+  /**
+   * Create timer to delay L2CAP parameter update request after connection
+   */
+#if (L2CAP_REQUEST_NEW_CONN_PARAM != 0)
+  HW_TS_Create(CFG_TIM_PROC_ID_ISR, &(BleApplicationContext.L2CAP_Update_timer_Id), hw_ts_SingleShot, L2CAP_Update_TimeoutCb);
+#endif
 
   /**
    * Make device discoverable
@@ -622,6 +639,9 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void *p_Pckt)
 #endif /* CFG_DEBUG_APP_TRACE != 0 */
 
           /* USER CODE BEGIN EVT_LE_CONN_UPDATE_COMPLETE */
+          /* ykk 20250927: 参数更新完成，绿灯短亮作为“已生效”提示，便于无串口调试场景观察 */
+          // BSP_LED_On(LED_GREEN);
+          HW_TS_Start(BleApplicationContext.SwitchOffGPIO_timer_Id, (uint32_t)LED_STATUS_TIMEOUT);
 
           /* USER CODE END EVT_LE_CONN_UPDATE_COMPLETE */
           break;
@@ -702,6 +722,12 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void *p_Pckt)
           HandleNotification.ConnectionHandle = BleApplicationContext.BleApplicationContext_legacy.connectionHandle;
           P2PS_APP_Notification(&HandleNotification);
           /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE */
+          /* ykk 20250927: 连接完成后延时发送 L2CAP 参数更新，避免过早请求被主机拒绝 */
+#if (L2CAP_REQUEST_NEW_CONN_PARAM != 0)
+          mutex = 1;
+          l2cap_retry_count = 0;
+          HW_TS_Start(BleApplicationContext.L2CAP_Update_timer_Id, (uint32_t)L2CAP_UPDATE_DELAY);
+#endif /* L2CAP_REQUEST_NEW_CONN_PARAM != 0 */
 
           /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
           break; /* HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE */
@@ -816,6 +842,9 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void *p_Pckt)
           mutex = 1;
 #endif /* L2CAP_REQUEST_NEW_CONN_PARAM != 0 */
           /* USER CODE BEGIN EVT_BLUE_L2CAP_CONNECTION_UPDATE_RESP */
+          /* ykk 20250927: 主机已响应更新请求，绿灯短亮；与“更新完成”区分，便于判断进度 */
+          // BSP_LED_On(LED_GREEN);
+          HW_TS_Start(BleApplicationContext.SwitchOffGPIO_timer_Id, (uint32_t)LED_STATUS_TIMEOUT);
 
           /* USER CODE END EVT_BLUE_L2CAP_CONNECTION_UPDATE_RESP */
           break;
@@ -879,6 +908,7 @@ void APP_BLE_Key_Button2_Action(void)
 #if (L2CAP_REQUEST_NEW_CONN_PARAM != 0 )    
   UTIL_SEQ_SetTask( 1<<CFG_TASK_CONN_UPDATE_REG_ID, CFG_SCH_PRIO_0);
 #endif
+  l2cap_retry_count = 0;
   
   return;
 }
@@ -1088,6 +1118,7 @@ static void Ble_Hci_Gap_Gatt_Init(void)
       BLE_DBG_SVCCTL_MSG("  Success: aci_gatt_update_char_value - Device Name\n");
     }
   }
+
 
   ret = aci_gatt_update_char_value(gap_service_handle,
                                    gap_appearance_char_handle,
@@ -1375,7 +1406,10 @@ static void Adv_Cancel_Req(void)
 static void Switch_OFF_GPIO()
 {
   /* USER CODE BEGIN Switch_OFF_GPIO */
+  /* ykk 20250927: 统一熄灭三色灯，避免状态提示残留影响人工判断 */
   BSP_LED_Off(LED_GREEN);
+  // BSP_LED_Off(LED_BLUE);
+  // BSP_LED_Off(LED_RED);
   /* USER CODE END Switch_OFF_GPIO */
 }
 
@@ -1402,10 +1436,14 @@ void BLE_SVC_L2CAP_Conn_Update(uint16_t ConnectionHandle)
         timeout_multiplier);
     if (ret != BLE_STATUS_SUCCESS)
     {
+      // BSP_LED_On(LED_RED);
+      mutex=1;
       APP_DBG_MSG("BLE_SVC_L2CAP_Conn_Update Range(%u,%u) Fail ret=0x%x\r\n", interval_min, interval_max, ret);
     }
     else
     {
+      // BSP_LED_Off(LED_RED);
+      // BSP_LED_On(LED_BLUE);
       APP_DBG_MSG("BLE_SVC_L2CAP_Conn_Update Range(%u,%u) Sent\r\n", interval_min, interval_max);
     }
   }
@@ -1431,6 +1469,41 @@ static void Connection_Interval_Update_Req(void)
 #endif /* L2CAP_REQUEST_NEW_CONN_PARAM != 0 */
 
 /* USER CODE BEGIN FD_SPECIFIC_FUNCTIONS */
+
+#if (L2CAP_REQUEST_NEW_CONN_PARAM != 0)
+static void L2CAP_Update_TimeoutCb(void)
+{
+  /* ykk 20250927: 连接建立后延时再请求，并在失败时限次重试，
+     解决“过早请求被拒/主机忙/参数边界不被接受”等导致的无效更新 */
+  if (BleApplicationContext.Device_Connection_Status == APP_BLE_CONNECTED_SERVER ||
+      BleApplicationContext.Device_Connection_Status == APP_BLE_CONNECTED_CLIENT)
+  {
+    uint8_t prev_mutex = mutex;
+    Connection_Interval_Update_Req();
+
+    /* 如果此次没有真正发送（可能 mutex=0 或早前失败），则根据重试次数决定是否再次尝试 */
+    if (prev_mutex == 1 && mutex == 0)
+    {
+      /* 已触发一次发送，蓝灯短亮做提示 */
+      // BSP_LED_On(LED_BLUE);
+      HW_TS_Start(BleApplicationContext.SwitchOffGPIO_timer_Id, (uint32_t)LED_STATUS_TIMEOUT);
+    }
+    else
+    {
+      /* 未能触发发送，认为一次失败：红灯短亮 */
+      // BSP_LED_On(LED_RED);
+      HW_TS_Start(BleApplicationContext.SwitchOffGPIO_timer_Id, (uint32_t)LED_STATUS_TIMEOUT);
+      /* 允许下一次再次尝试 */
+      mutex = 1;
+      if (l2cap_retry_count < L2CAP_UPDATE_MAX_RETRY)
+      {
+        l2cap_retry_count++;
+        HW_TS_Start(BleApplicationContext.L2CAP_Update_timer_Id, (uint32_t)L2CAP_UPDATE_DELAY);
+      }
+    }
+  }
+}
+#endif /* L2CAP_REQUEST_NEW_CONN_PARAM != 0 */
 
 /* USER CODE END FD_SPECIFIC_FUNCTIONS */
 /*************************************************************
